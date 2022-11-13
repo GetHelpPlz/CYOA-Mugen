@@ -1,0 +1,1123 @@
+;-----------------------------------------------------------------------------
+[Statedef -2];常時監視ステート(相手に行動を制御されても関係無く常に実行される)
+;-----------------------------------------------------------------------------
+;-------------------------------------------------------------------------
+;人物开关说明
+;*************************************************************************
+;以下是强化开关，请视情况而选择开启，请不要出现吊打对面的现象
+;**************************************************************************
+
+[State -2];部分攻击吸血
+Type = LifeAdd
+TriggerAll = 1	;0关闭，1开启
+TriggerAll = Alive
+trigger1 = !ishelper
+trigger1 = movehit
+value = enemy,GethitVar(damage)*0.15
+absolute = 1
+ignorehitpause = 1
+kill = 0
+
+
+
+[State -2]
+type = SelfState
+value = 52000
+triggerall = var(42) = 0
+triggerall = alive
+triggerall = Stateno != 52000
+triggerall = moveType = H
+Trigger1 = Pos Y < 50
+trigger1 = command = "hold_z"
+trigger1 = stateno = [5080,5120]
+
+[State -2];暴毙保护
+type = lifeadd
+triggerall = !ishelper
+triggerall = var(42) = 0
+triggerall = movetype = H
+trigger1 = fvar(31) >= Lifemax*0.2
+trigger1 = life <= 50
+trigger1 = gametime%1 = 0
+value = 2
+ignorehitpause = 1
+
+[State -2]
+type = selfstate
+triggerall = !ishelper
+triggerall = sysvar(3) = 640
+trigger1 = movetype = H
+value = 640
+persistent = 256
+ignorehitpause = 1
+
+
+[State -2]
+type = targetdrop
+trigger1 = !ishelper
+trigger1 = target,ishelper
+trigger2 = target,alive = 0
+trigger2 = target,stateno = 5150
+ignorehitpause = 1
+
+;---------------------------------------------------
+[state -2];凶-狂强化
+type = varset
+Trigger1 = roundstate > 2
+var(41) = 0
+
+[state -2];触发强化条件
+type = varset
+triggerall = !ishelper
+trigger1 = stateno = 3950
+trigger1 = animelemtime(1) >= 1
+var(41) = 1
+;---------------------------------------------------
+;狂上强化
+[state -2];回合结束归零
+type = varset
+trigger1 = roundstate > 3
+var(42) = 0
+
+[state -2];触发强化条件
+type = varset
+triggerall = !ishelper
+trigger1 = stateno = 3950
+trigger1 = animelemtime(19) >= 1
+var(42) = 1
+
+[state -2]
+type = varset
+triggerall = !ishelper
+trigger1 = stateno = 3700
+trigger1 = animelemtime(9) >= 2
+var(42) = 2
+
+[State -2,];护甲
+type = Helper
+triggerall = !ishelper
+triggerall = var(42) >= 1
+trigger1 = numhelper(8500) = 0
+trigger1 = roundstate = 2
+name = "Active Armor"
+helpertype = player
+stateno = 8500
+ID = 8500
+pos = 0,0
+pos = 0,0
+postype = p1    
+ownpal = 1
+supermovetime = 999999999
+pausemovetime = 999999999
+ignorehitpause = 1
+
+[State -3, 永续对面]
+type = Helper
+triggerall = !ishelper
+triggerall = roundstate != 1
+triggerall = numhelper(1000003) = 0
+trigger1 = var(42) != 0
+stateno = 5150
+id = 1000003
+helpertype = player
+pos = 0,0
+postype = p1
+ownpal = 0
+keyctrl = 0
+ignorehitpause = 1
+pausemovetime = 999999999999
+supermovetime = 999999999999
+
+[state -2]
+type = selfstate
+trigger1 = Ishelper(8500)
+value = 8500
+ignorehitpause = 1
+
+[state -2];无敌
+type = nothitby
+triggerall = !ishelper
+trigger1 = numhelper(8500) = 1
+value = SCA
+
+[State -2, PowerAdd];常时满气
+type = PowerSet
+triggerall = !ishelper
+trigger1 = numhelper(8500) = 1
+value = powermax
+ignorehitpause = 1
+persistent = 1
+
+[State -2, Helper];时停阻止
+type = Helper
+triggerall = !ishelper
+trigger1 = numhelper(14500) = 0
+trigger1 = var(42) >= 2
+ID = 14500
+name = "Anti - Time Pause"
+postype = p1
+pos = 0,0
+stateno = 14500
+helpertype = player
+keyctrl = 0
+supermovetime = 9999999999999
+pausemovetime = 9999999999999
+ignorehitpause = 1
+
+[State ]
+type = Pause
+triggerall = !ishelper
+triggerall = numhelper(14500) != 0
+trigger1 = var(42) >= 2
+time = 99
+movetime = 99
+ignorehitpause = 1
+
+[State ]
+type = Superpause
+triggerall = !ishelper
+triggerall = numhelper(14500) != 0
+trigger1 = var(42) >= 2
+anim = -1
+time = 99
+movetime = 99
+unhittable = 0
+darken = 0
+p2defmul = 1
+ignorehitpause = 1
+
+[State -2,];死亡抗拒
+type = lifeadd
+triggerall = !ishelper
+triggerall = var(42) = 1
+trigger1 = life <= 50
+trigger1 = gametime%1 = 0
+value = 2
+ignorehitpause = 1
+
+[STATE -2]
+type = AssertSpecial
+triggerall = p2name != "K-Red"
+triggerall = var(42) = 1
+Triggerall = alive > 0
+trigger1 = stateno = 52001
+flag = noko
+ignorehitpause = 1
+
+[State -2,r3即死]
+type = TargetLifeAdd
+triggerall = numtarget
+triggerall = target,alive > 0
+triggerall = roundstate > 2
+trigger1 = !ishelper
+value = -2147483646
+kill = 1
+absolute = 1
+ignorehitpause = 1
+
+;-------------------------------------------------------------------------
+;一般脱离
+[State 0, VarAdd]
+type = VarAdd
+trigger1 = movetype = H 
+trigger1 = Var(15) <= 699
+trigger1 = stateno != 52000
+trigger1 = stateno != 52001
+v = 15
+value = 1
+
+[State 0, VarSet]
+type = VarSet
+trigger1 = stateno = 52000
+trigger1 = Var(15) >= 699
+trigger2 = movetype != H 
+trigger3 = stateno = 5210
+trigger3 = Var(15) >= 699
+v = 15    ;fv = 10
+value = 0
+
+[State 0, SelfState]
+type = SelfState
+trigger1 = roundstate = 2
+trigger1 = alive = 1
+trigger1 = movetype = H 
+Trigger1 = Pos Y < 50
+trigger1 = Var(15) >= 700 
+value = 52000
+ctrl = 0
+ignorehitpause = 1
+persistent = 0
+
+;[State 0, SelfState]
+;type = SelfState
+;triggerall = var(42) = 0
+;triggerall = var(16) = [200,430]
+;trigger1 = movetype = H 
+;value = 52002
+;ctrl = 0
+;ignorehitpause = 1
+;persistent = 0
+
+[State -2, SelfState]
+type = SelfState
+triggerall = var(42) > 0
+triggerall = sysvar(3) = 0
+trigger1 = movetype = H
+value = 52001
+ctrl = 0
+ignorehitpause = 1
+persistent = 0
+
+
+;--------------------------------------------------------------------
+;攻击判定
+[State -2, VarSet]
+type = VarSet
+triggerall = RoundState = 2
+triggerall = MoveType = A
+trigger1 = MoveHit
+trigger1 = NumTarget = 0
+trigger2 = EnemyNear(fvar(37)),Stateno = [120,159]
+trigger2 = MoveReversed
+v = 23
+value = 1
+ignorehitpause = 1
+
+[State -2, VarSet]
+type = VarSet
+triggerall = Var(23)
+trigger1 = MoveType != A
+trigger2 = MoveHit
+trigger2 = NumTarget
+v = 23
+value = 0
+ignorehitpause = 1
+
+;-------------------------------------------------------------------------
+;回血检测
+[State 检测ON]
+type = VarSet
+triggerall = var(42) = 0
+trigger1 = helper(8000),var(18)
+v = 20
+value = 4
+ignorehitpause = 1
+
+[State 检测off]
+type = VarSet
+triggerall = var(42) = 0
+trigger1 = !helper(8000),var(18)
+v = 20
+value = 1
+ignorehitpause = 1
+
+[State 检测off]
+type = VarSet
+triggerall = var(42) != 0
+trigger1 = helper(8000),var(18)
+v = 20
+value = 1
+ignorehitpause = 1
+
+[State 回血检测]
+type = AttackMulSet
+triggerall = var(42) = 0
+trigger1 = helper(8000),var(18)
+value = 5
+ignorehitpause = 1
+
+[State 回血检测]
+type = AttackMulSet
+triggerall = var(42) != 0
+trigger1 = helper(8000),var(18)
+value = 1
+ignorehitpause = 1
+;-------------------------------------------------------------------------
+[State 37]
+Type = varset
+Triggerall = !ishelper
+trigger1 = (Enemynear(fvar(37)),lifemax) > 1000
+fvar(22) = (((Enemynear(fvar(37)),lifemax)/1000)*(const(data.attack)*.02))
+IgnoreHitPause = 1
+
+[State 37]
+Type = varset
+Triggerall = !ishelper
+trigger1 = Enemynear(fvar(37)),lifemax <= 1000
+fvar(22) = 1*(const(data.attack)*.02)
+IgnoreHitPause = 1
+
+
+;--------------------------------------------------------------------------
+[State -2, NotHitBy]
+type = NotHitBy
+trigger1 = roundstate = 1
+value = SCA
+ignorehitpause = 1
+persistent = 1
+
+;[State 回气]
+;type = poweradd
+;triggerall = roundstate = 2
+;trigger1 = gametime%2 = 1
+;value = 1
+;ignorehitpause = 1
+
+[State -2]
+type = poweradd
+triggerall = roundno = 3
+trigger1 = anim = 190
+trigger1 = AnimElem = 4
+value = 2000
+ignorehitpause = 1
+
+[State -2]
+type = poweradd
+trigger1 = roundno > 3
+trigger1 = anim = 188
+trigger1 = AnimElem = 3
+value = 1000
+ignorehitpause = 1
+
+[State -2]
+type = PowerAdd
+trigger1 = Time = 0 && StateNo = [150,154]
+trigger2 = MoveType = H && Time = 0
+trigger3 = MoveType = A && Time = 0 && !hitpausetime
+value = 10 + Random%2
+ignorehitpause = 1
+persistent = 0
+
+;------------------------------------------------------------
+;血量强化
+[State -2]
+type = VarSet
+trigger1 = Life > LifeMAX*0.5
+fv = 35    
+value = 0
+ignorehitpause = 1
+
+[State -2]
+type = VarSet
+trigger1 = Life <= LifeMAX*0.5 && Life > LifeMAX*0.25
+fv = 35    
+value = 1
+ignorehitpause = 1
+
+[State -2]
+type = VarSet
+trigger1 = Life <= LifeMAX*0.25
+fv = 35    
+value = 2
+ignorehitpause = 1
+
+
+;------------------------------------------------------------------------
+;State固定
+[state 1]
+type = selfstate;
+triggerall = !ishelper
+trigger1 = anim = 5200
+value = 52000
+ignorehitpause=1
+
+[state 1]
+type = selfstate;
+triggerall = !ishelper
+trigger1 = anim = 5203
+value = 5203
+ignorehitpause=1
+
+[State 1]
+type = selfstate
+trigger1 = ishelper(1001)
+value = 1001
+ignorehitpause = 1
+
+[State 1]
+type = selfstate
+trigger1 = ishelper(1205)
+value = 1205
+ignorehitpause = 1
+
+[State 1]
+type = selfstate
+trigger1 = ishelper(1401)
+value = 1401
+ignorehitpause = 1
+
+[State 1]
+type = selfstate
+trigger1 = ishelper(2230)
+value = 2230
+ignorehitpause = 1
+
+[state 1]
+type = selfstate;
+triggerall = ishelper
+trigger1 = anim = 3620
+value = 3620
+ignorehitpause=1
+
+[State  ]
+type = Selfstate
+trigger1 = ishelper(8613)
+value = 8613
+persistent = 256
+ignorehitpause = 1
+
+[State  ]
+type = Selfstate
+trigger1 = ishelper(8614)
+value = 8614
+persistent = 256
+ignorehitpause = 1
+
+[State ]
+type = selfstate
+trigger1 = ishelper(281305)
+value = 281305
+ignorehitpause = 1
+
+[State ]
+type = selfstate
+trigger1 = ishelper(281306)
+value = 281306
+ignorehitpause = 1
+
+[State  ]
+type = Selfstate
+trigger1 = ishelper(281307)
+value = 281307
+persistent = 256
+ignorehitpause = 1
+
+[State  ]
+type = Selfstate
+trigger1 = ishelper(281308)
+value = 281308
+persistent = 256
+ignorehitpause = 1
+
+[State  ]
+type = Selfstate
+trigger1 = ishelper(2230)
+value = 2230
+persistent = 256
+ignorehitpause = 1
+
+[State ]
+type = selfstate
+trigger1 = ishelper(3931)
+value = 3931
+ignorehitpause = 1
+
+[State ]
+type = selfstate
+trigger1 = ishelper(1000003)
+value = 5150
+ignorehitpause = 1
+
+[State ]
+type = selfstate
+trigger1 = ishelper(8000)
+value = 8000
+ignorehitpause = 1
+
+[State ]
+type = selfstate
+trigger1 = ishelper(10600)
+value = 10600
+ignorehitpause = 1
+
+
+[State  ]
+type = Selfstate
+trigger1 = ishelper(14500)
+value = 14500
+ignorehitpause = 1
+
+[State helper锁1]
+type = selfstate
+trigger1 = ishelper(28130112)
+value = 28130112
+ignorehitpause = 1
+
+;[State 27]
+;type = varset
+;triggerall = !ishelper
+;triggerall = movetype = H||life < 1||!alive||sysfvar(4) != 6*gametime*gametime+66*gametime+666
+;triggerall = stateno != [120,159]
+;trigger1 = sysvar(2) = 383||sysvar(2) = 1625||sysvar(2) = 1655
+;trigger2 = sysvar(2) = 1551||sysvar(2) = 1552
+;trigger3 = sysvar(2) = 1700||sysvar(2) = 1710||sysvar(2) = 1960
+;trigger4 = sysvar(2) = 1990||sysvar(2) = 1860||sysvar(2) = 2501
+;trigger5 = sysvar(2) = 2700||sysvar(2) = 2701
+;trigger6 = sysvar(2) = 3000||sysvar(2) = 3003||sysvar(2) = 3200||sysvar(2) = 3202||sysvar(2) = 3205
+;trigger7 = sysvar(2) = 3206||sysvar(2) = 3230||sysvar(2) = 3340||sysvar(2) = 3250||sysvar(2) = 3251||sysvar(2) = 3280
+;trigger8 = sysvar(2) = 4502||sysvar(2) = 4503||sysvar(2) = 2600||sysvar(2) = 2602||sysvar(2) = 9010||sysvar(2) = 9011
+;trigger9 = sysvar(2) = 9014||sysvar(2) = 4500||sysvar(2) = 3801
+;trigger10 = sysvar(2) = 2900 ||sysvar(2) = 3700
+;trigger11 = sysvar(2) = 3701||sysvar(2) = 9000||sysvar(2) = 9001||sysvar(2) = 9002||sysvar(2) = 9004||sysvar(2) = 9005||sysvar(2) = 9006||sysvar(2) = 9007
+;trigger12 = sysvar(2) = 17500||sysvar(2) = 17501||sysvar(2) = 17510||sysvar(2) = 17115||sysvar(2) = 17120||sysvar(2) = 17125
+;var(30) = 1
+;persistent = 256
+;ignorehitpause = 1
+
+[State -2,普通攻击固定]
+type = selfstate
+triggerall = !ishelper
+;triggerall = target,movetype = H||enemynear,movetype = H||var(30)
+trigger1 = anim = 500||anim = 505||anim = 510||anim = 515||anim = 520||anim = 530||anim = 535||anim = 545||anim = 540
+trigger2 = anim = 300||anim = 650||anim = 52001
+trigger3 = anim = 200||anim = 205||anim = 210||anim = 215||anim = 230||anim = 235
+trigger4 = anim = 240||anim = 245||anim = 255||anim = 265||anim = 270||anim = 400||anim = 600||anim = 610||anim = 630
+trigger5 = anim = 410||anim = 430
+value = anim
+ctrl = 0
+persistent = 256
+ignorehitpause = 1
+
+[State -2,必杀攻击固定]
+type = selfstate
+triggerall = !ishelper
+;triggerall = target,movetype = H||enemynear,movetype = H||var(30)
+trigger1 = anim = 1000||anim = 1010||anim = 1015||anim = 1020||anim = 1030||anim = 1031||anim = 1060||anim = 1066
+trigger2 = anim = 1100||anim = 1101||anim = 1110||anim = 1111||anim = 1110||anim = 1111||anim = 1120||anim = 1115
+trigger3 = anim = 1105
+trigger4 = anim = 1200||anim = 1220||anim = 1260||anim = 1261||anim = 1262||anim = 1263||anim = 1264||anim = 1264
+trigger5 = anim = 1300||anim = 1310||anim = 1320||anim = 1340
+trigger6 = anim = 1400||anim = 1420||anim = 1430||anim = 1440||anim = 1450||anim = 1460||anim = 1470||anim = 1480
+trigger7 = anim = 1680||anim = 1690||anim = 1870||anim = 1871
+trigger8 = anim = 1800||anim = 1801||anim = 1810||anim = 1811||anim = 1812||anim = 1850||anim = 1851||anim = 1852
+value = anim
+ctrl = 0
+persistent = 256
+ignorehitpause = 1
+
+[State -2,超杀攻击固定]
+type = selfstate
+triggerall = !ishelper
+;triggerall = target,movetype = H||enemynear,movetype = H||var(30)
+trigger1 = anim = 2200||anim = 2201||anim = 2202||anim = 2240
+trigger2 = anim = 2300||anim = 2301||anim = 2302||anim = 2350||anim = 2380||anim = 2382
+trigger3 = anim = 2400||anim = 2401||anim = 2402
+trigger4 = anim = 2500||anim = 2501
+trigger5 = anim = 2600||anim = 2601||anim = 2605||anim = 2606
+trigger6 = anim = 2750||anim = 2751
+trigger7 = anim = 3100||anim = 3101||anim = 3102||anim = 3103||anim = 3160
+trigger8 = anim = 3200
+trigger9 = anim = 3400||anim = 3401
+trigger10 = anim = 3500||anim = 3505
+trigger11 = anim = 3600||anim = 3601||anim = 3602||anim = 3603||anim = 3604
+trigger12 = anim = 3700||anim = 3702||anim = 3703||anim = 3750||anim = 3751||anim = 3752||anim = 3755||anim = 3756||anim = 3757
+trigger13 = anim = 3800||anim = 3801||anim = 3802||anim = 3804||anim = 3807||anim = 3830||anim = 3831||anim = 3832||anim = 3833
+trigger14 = anim = 3900||anim = 3910||anim = 3950
+value = anim
+ctrl = 0
+persistent = 256
+ignorehitpause = 1
+
+[State ]
+type = selfstate
+triggerall = Pos Y < 30
+trigger1 = !ishelper
+trigger1 = !alive
+value = 5150
+ignorehitpause = 1
+
+
+;********************************************************************************************
+;伤害修正(1-6P)
+[State 0, AttackMulSet]
+type = AttackMulSet
+triggerAll = PalNo = [1,6]
+trigger1 = HitCount > 5 
+value = 0.5
+ignorehitpause = 1
+persistent = 1
+
+[State 0, AttackMulSet]
+type = AttackMulSet
+triggerAll = PalNo = [1,6]
+trigger1 = HitCount > 20
+value = 0.4
+ignorehitpause = 1
+persistent = 1
+
+[State 0, AttackMulSet]
+type = AttackMulSet
+triggerAll = PalNo = [1,6]
+trigger1 = HitCount > 50
+value = 0.3
+ignorehitpause = 1
+persistent = 1
+
+
+;********************************************************************************************
+[STATE 回血底力]
+type = varset
+triggerAll = PalNo = [1,6]
+trigger1 = 1
+v = 37
+value = life
+ignorehitpause = 1
+
+[STATE 回血底力]
+type = varset
+triggerAll = PalNo = [1,6]
+trigger1 = !var(34)
+v = 34
+value = life
+ignorehitpause = 1
+
+[STATE 回血底力]
+type = VarSet
+triggerAll = PalNo = [1,6]
+trigger1 = var(35) = 0
+trigger1 = Var(34) > Var(37)
+v = 35
+value = Var(34) - Var(37)
+ignorehitpause = 1
+
+[State 上一帧血量大于20且本帧血量为0时回1]
+type = Lifeset
+triggerall = PalNo = [1,6]
+triggerall = alive
+trigger1 = var(34) > var(37)
+trigger1 = var(34) > 50
+trigger1 = var(37) < 1
+value = 1
+absolute = 1
+ignorehitpause = 1
+
+[STATE 回血底力]
+type = Lifeadd
+triggerall = Alive
+trigger1 = life <= LifeMAX*0.7 && life > LifeMAX*0.4
+trigger1 = var(34) != var(37)
+trigger1 = var(35)
+value = (0.1)*var(35)
+absolute = 1
+ignorehitpause = 1
+
+[STATE 回血底力]
+type = Lifeadd
+triggerall = Alive
+trigger1 = life <= LifeMAX*0.4 && life > LifeMAX*0.2
+trigger1 = var(34) != var(37)
+trigger1 = var(35)
+value = (0.5)*var(35)
+absolute = 1
+ignorehitpause = 1
+
+[STATE 回血底力]
+type = Lifeadd
+triggerall = Alive
+trigger1 = life <= LifeMAX*0.2
+trigger1 = var(34) != var(37)
+trigger1 = var(35)
+value = (0.7)*var(35)
+absolute = 1
+ignorehitpause = 1
+
+[STATE 回血底力]
+type = VarSet
+trigger1 = 1
+v = 34
+value = life
+ignorehitpause = 1
+
+[STATE 回血底力]
+type = VarSet
+trigger1 = 1
+v = 35
+value = 0
+ignorehitpause = 1
+;------------------------------------------------------
+
+[State 2,底力]
+type = DefenceMulSet
+trigger1 = fvar(35) = 1 && life > 500
+value = 0.7
+ignorehitpause = 1
+
+[State 2,底力]
+type = DefenceMulSet
+trigger1 = fvar(35) = 2 && life > LifeMAX*0.1
+value = 0.35
+ignorehitpause = 1
+
+[State 2,底力]
+type = DefenceMulSet
+trigger1 = life <= LifeMAX*0.1
+value = 0.2
+ignorehitpause = 1
+
+;-----------------------------------------------------------------------------
+
+[state -2,大?害回血]
+type = varset
+triggerAll = PalNo = [1,6]
+trigger1 = movetype != H
+FV = 31
+value = life
+
+[state -2,大?害回血]
+type = varset
+triggerall = var(42) > 0
+triggerAll = PalNo = [1,6]
+trigger1 = 1
+FV = 32
+value = life
+
+[STATE -2]
+type = AssertSpecial
+triggerall = p2name != "K-Red"
+triggerall = var(42) = 0
+Triggerall = alive > 0
+triggerall = enemy,alive
+triggerall = movetype = H
+trigger1 = fvar(31) >= Lifemax*0.2
+flag = noko
+ignorehitpause = 1
+
+[state -2,大?害回血]
+type = lifeset
+triggerall = var(42) > 0
+triggerall = PalNo = [1,6]
+triggerall = fvar(31) - fvar(32) >= 200
+trigger1 = statetype = L
+trigger2 = p2movetype != A
+value = fvar(31)
+
+;-----------------------------------------------------------------------------
+;半血火花环绕
+[State Palfx]
+type = Helper
+trigger1 = numhelper(8100) = 0
+helpertype = normal
+name = "Palfx"
+ID = 8100
+stateno = 8100
+pos = 0,0
+postype = p1
+facing = 1
+keyctrl = 0
+ownpal = 0
+supermovetime = 99999999
+pausemovetime = 99999999
+
+[State 1801, RemoveExplod]
+type = RemoveExplod
+trigger1 = Anim != 1801
+id = 1802 
+
+[State 1001,]
+type = RemoveExplod
+trigger1 = Anim >= 2000
+trigger2 = MoveType = H
+ID = 1150
+
+[State 1001,]
+type = RemoveExplod
+trigger1 = Anim != 900
+ID = 900
+
+[State 1001,]
+type = RemoveExplod
+trigger1 = Anim != 3100
+ID = 3100
+
+[State 1001,]
+type = RemoveExplod
+trigger1 = Anim != 3110
+ID = 3110
+
+[State 1001,]
+type = RemoveExplod
+trigger1 = Anim != 3120
+ID = 3120
+
+[State -2]
+type = RemoveExplod
+trigger1 = Anim != 2000
+ID = 2000
+
+[state -2]
+type = RemoveExplod
+Trigger1 = Anim != 1050
+ID=1052
+
+[state -2]
+type = RemoveExplod
+Trigger1 = Anim != 1050
+ID=1055
+
+;-----------------------------------------------------------------------
+[State 0, VarSet]
+type = VarSet
+Trigger1 = anim != 1725
+Trigger1 = P2MoveType != H
+fv = 15   
+value = 0
+;-----------------------------------------------------------------------
+
+;-----------------------------------------------------------------------
+;花火
+;Variable de quemar
+
+[State 1063 击中火焰Helper]
+type = Helper
+trigger1 = Projhit1063 = 1
+name = "LA PING MU"
+stateno = 21999
+id = 21999
+postype = p1
+ownpal = 1
+ignorehitpause = 1
+persistent = 0
+supermovetime = 99999
+pausemovetime = 99999
+
+
+
+;デバッグモードに白い文字の表示を加える
+[State -2, デバッグ表示]
+type = DisplayToClipboard
+trigger1 = 1
+text = "X=%d,Y=%d,Pos X=%d,Y=%d"
+params = floor(P2BodyDist X),floor(P2BodyDist Y),ceil(Pos X),floor(Pos Y)
+ignorehitpause = 1
+
+[State -2, デバッグ表示その3]
+type = AppendToClipboard
+trigger1 = 1
+text = "\nDist F19=%d,F15=%d, F16=%d,F33=%d : F58=%d"
+params = fvar(19),fvar(15),fvar(16),fvar(33),var(50)
+ignorehitpause = 1
+
+;-------------------
+
+;-[ｷﾖ?ﾟ]--------------------------------------------------------------------
+;ﾊﾜ???
+[State -2,]
+type = StopSnd
+trigger1 = Movetype = H
+channel = 10
+ignorehitpause = 1
+
+[State -2, PlaySnd]
+type = PlaySnd
+triggerall = alive = 1
+triggerall = random <= 250
+triggerall = time = 1
+trigger1 = anim = 5000 || anim = 5001 || anim = 5010 || anim = 5011
+trigger2 = anim = 5020 || anim = 5021
+value = s11,1
+
+[State -2, PlaySnd]
+type = PlaySnd
+triggerall = alive = 1
+triggerall = random <= 250
+triggerall = time = 1
+trigger1 = anim = 5002 || anim = 5003 || anim = 5012 || anim = 5013
+trigger2 = anim = 5022 || anim = 5023
+value = s11,2
+
+[State -2, PlaySnd]
+type = PlaySnd
+triggerall = alive = 1
+triggerall = random <= 250
+triggerall = time = 1
+trigger1 = stateno = 5101
+value = s11,3
+
+
+[State -2]
+Type = PlaySnd
+Trigger1 = NumTarget
+Trigger1 = Target,StateNo = 4450
+Trigger1 = Target,Time = 1
+value = 6,1
+ignorehitpause = 1
+
+;生存判定
+[State -2, ];崩れＫＯ用
+type = varset
+triggerall = var(18) = 0 && alive
+trigger1 = statetype != A
+var(18) = 1
+
+[State -2, ];崩れＫＯ用
+type = varset
+triggerall = var(18) != 0 && alive
+trigger1 = statetype = A
+var(18) = 0
+
+[State -2, KOボイス]
+type = PlaySnd
+trigger1 = !alive && life <= 0
+trigger1 = var(19) = 0
+trigger1 = stateno != 5950
+trigger1 = var(19) := 1
+value = s11+(var(8)*10),5+(fvar(14)*100)
+
+[State -2, ]
+type = varset
+triggerall = var(19) = 1
+trigger1 = alive
+var(19) = 0
+
+
+[State 100,]
+type = StopSnd
+Triggerall = Fvar(34) = 0
+trigger1 = command != "holdfwd"
+trigger2 = Anim != 100
+channel = 6
+
+;--------------------------------------------------------------------------------------
+;混线
+
+
+;---------------------------------------------------------------------------------
+[Statedef -3];常時監視ステート(p2statenoなどで相手に行動を制御された時は実行しない)
+[State -3]
+type = Hitadd
+triggerall = var(42) != 0
+trigger1 = 1
+value = -999
+
+[State 1000,]
+type = RemoveExplod
+triggerall = numhelper(10600) = 0
+triggerall = numhelper(10605) = 0
+trigger1 = 1
+ID = 10600
+
+;---------------------------------------------------------------------------------
+[State -3]
+type = helper
+triggerall = !ishelper
+triggerall = numhelper(281305) = 0
+trigger1 = stateno = 3700
+trigger1 = animelemtime(11) >= 10
+stateno = 281305
+helpertype = player
+name = "quan ping du"
+id = 281305
+pos = 0,0
+postype = p1
+ownpal = 1
+keyctrl = 0
+IgnoreHitPause = 1
+supermovetime = 999999999999
+pausemovetime = 999999999999
+
+;----------------------------------------------------------
+[State -3]
+Type = Helper
+Trigger1 =!NumHelper(8000)
+Trigger1 = roundstate <= 2 && alive
+HelperType = normal
+Name = "Life Detector"
+StateNo = 8000
+ID = 8000
+Pos = 0,0
+KeyCtrl = 1
+PauseMoveTime = 9999999
+SuperMoveTime = 9999999
+Persistent = 0
+
+;[State -3]
+;type = helper
+;triggerall = !ishelper
+;triggerall = numhelper(281306) = 0
+;Trigger1 =!NumHelper(281306)
+;Trigger1 = roundstate <= 2 && alive
+;stateno = 281306
+;helpertype = player
+;name = "yong xu kong zhi"
+;id = 281306
+;pos = 0,0
+;postype = p1
+;ownpal = 1
+;keyctrl = 0
+;IgnoreHitPause = 1
+;supermovetime = 999999999999
+;pausemovetime = 999999999999
+
+;---------------------------------------------------------------------------------
+
+;※※※※※※※※※※※※※※※※※※※※ハイジャンプ・東方萃夢想風味
+;理論は簡単
+;ハイジャンプコマンドを入れた「瞬間」、varスイッチを１にする。
+;でハイジャンプのコマンドは最後がU、つまりジャンプする。
+;そしてジャンプステート５０の時にvarスイッチが１以上ならveladdで加速します。
+;varスイッチを０にするトリガーは「ステート５０の２フレーム目」です。
+
+[State -3, コマンドを入れたらVarをON] 
+type = VarSet
+trigger1 = command = "jump"
+trigger1 = ctrl
+trigger2 = prevstateno = 100 || prevstateno = 115
+trigger2 = command = "holdfwd"
+v = 3
+value = 1
+
+[State -3, sysvarを引継ぐ]
+type = VarSet
+trigger1 = Var(3) = 1
+trigger1 = stateno = 40 ;ジャンプする前のステート
+trigger1 = AnimTime = 0 ;ジャンプ方向を決めるsysvarがリセットされる寸前
+var(3) = ifelse(sysvar(1) = 0, 2, ifelse(sysvar(1)=1, 3, 4))
+
+[State -3, varをOFFにするステート]
+type = VarSet
+triggerall = Time = 2
+trigger1 = stateno = 50
+trigger2 = stateno != [40,59]
+v = 3
+value = 0
+
+[State -3, 前にボタンを押してたら前にも加速]
+type = VelAdd
+trigger1 = var(3) = 3
+trigger1 = stateno = 50 || stateno = 10050
+x = 1.8
+
+[State -3, 後ろなら後ろに加速]
+type = VelAdd
+trigger1 = var(3) = 4
+trigger1 = stateno = 50 || stateno = 10050
+x = -1.8
+
+[State -3, 垂直ジャンプにveladdを使って上に加速]
+type = null;VelAdd
+trigger1 = var(3) = 2
+trigger1 = stateno = 50 || stateno = 10050
+y = -1.8
+
+[State -3, 成功したときの残像]
+type = AfterImage
+trigger1 = var(3) >= 1
+trigger1 = stateno = 50
+time = 25
+trans = add1
+length = 4
+timeGap = 3
+frameGap = 1
+palBright = 0, 0, 0
+palContrast = 128, 128, 128
+palAdd = 0, 0, 0
+palMul = 1, 1, 1
+
+;※常時監視ステートは常に有効にしたいステートコントローラをどんどん追加していきます。
+
+;---------------------------------------------------------------------------
+; 各種ヘルパー
+;---------------------------------------------------------------------------
+
+;-----------------------------------------------------------------------------------------------------------------------------------------------
+
